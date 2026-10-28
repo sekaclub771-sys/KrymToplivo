@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Крым Топливо Локатор</title>
+    <title>Крым Топливо | Карта и Мониторинг АЗС</title>
     
-    <!-- Настройки PWA приложения для iOS и Android -->
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -28,7 +27,6 @@
         body { background: var(--cyber-bg); color: var(--text-neon); min-height: 100vh; padding-bottom: 60px; -webkit-font-smoothing: antialiased; }
         .container { width: 92%; max-width: 540px; margin: 0 auto; }
 
-        /* Премиальный Хедер с Флагом Крыма */
         header {
             background: rgba(5, 7, 15, 0.85);
             backdrop-filter: blur(25px);
@@ -41,7 +39,6 @@
         .header-flex { display: flex; justify-content: space-between; align-items: center; }
         .brand-wrapper { display: flex; align-items: center; gap: 15px; }
         
-        /* Цифровой флаг Крыма кодом */
         .crimea-flag {
             width: 46px; height: 28px; border-radius: 5px; display: flex; flex-direction: column; overflow: hidden;
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.25); border: 1px solid rgba(255, 255, 255, 0.1);
@@ -54,7 +51,6 @@
         .system-radar { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--neon-green); }
         .radar-pulse { width: 8px; height: 8px; background: var(--neon-green); border-radius: 50%; animation: radar 1.5s infinite; }
 
-        /* Панель управления */
         .control-panel { background: var(--cyber-card); border: 1px solid var(--cyber-border); border-radius: 22px; padding: 22px; margin: 25px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         input {
             width: 100%; background: #090c15; border: 1px solid rgba(56, 189, 248, 0.2); padding: 16px 18px; border-radius: 14px; color: white; font-size: 16px; outline: none; margin-bottom: 16px;
@@ -64,7 +60,29 @@
         .tab-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px 0; border-radius: 12px; color: #64748b; font-size: 14px; font-weight: 800; cursor: pointer; }
         .tab-btn.active { color: white; background: #0d1527; border-color: var(--neon-blue); box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
 
-        /* Сетка карточек АЗС */
+        /* 🗺️ СТИЛЬНЫЙ КОНТЕЙНЕР ДЛЯ ЯНДЕКС КАРТЫ */
+        .map-section {
+            background: var(--cyber-card);
+            border: 1px solid var(--cyber-border);
+            border-radius: 24px;
+            padding: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+        .map-header-text {
+            font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--neon-blue); margin: 8px 0 12px 10px; display: flex; align-items: center; gap: 6px;
+        }
+        #map-container {
+            width: 100%;
+            height: 280px;
+            border-radius: 16px;
+            background: #090c15;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Карточки АЗС */
         .grid { display: flex; flex-direction: column; gap: 20px; }
         .cyber-card { background: var(--cyber-card); border: 1px solid var(--cyber-border); border-radius: 24px; padding: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); position: relative; }
         
@@ -75,7 +93,6 @@
         .brand-name { font-size: 24px; font-weight: 900; color: white; margin-bottom: 4px; }
         .station-geo { font-size: 14px; color: #64748b; margin-bottom: 18px; display: flex; flex-direction: column; gap: 4px; }
         
-        /* Плашка расстояния по GPS */
         .distance-badge {
             display: inline-flex; align-items: center; width: max-content; background: rgba(168, 85, 247, 0.12); 
             border: 1px solid rgba(168, 85, 247, 0.3); color: #e9d5ff; font-weight: 700; font-size: 12px;
@@ -94,7 +111,6 @@
 
         .log-box { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.04); padding: 14px; border-radius: 12px; font-size: 14px; color: #94a3b8; line-height: 1.4; margin-bottom: 16px; }
 
-        /* Оранжевая кнопка Яндекс.Навигатора */
         .navi-btn {
             display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
             background: linear-gradient(135deg, #ff5c00 0%, #ff9000 100%); border: none; padding: 15px; border-radius: 14px;
@@ -109,6 +125,9 @@
             100% { transform: scale(0.9); opacity: 1; }
         }
     </style>
+    
+    <!-- Подключение официального скрипта Яндекс Карт -->
+    <script src="https://yandex.ru" type="text/javascript"></script>
 </head>
 <body>
 
@@ -130,6 +149,7 @@
     </header>
 
     <main class="container">
+        <!-- Блок управления -->
         <section class="control-panel">
             <input type="text" id="searchInput" placeholder="Поиск локации, трассы или бренда..." onkeyup="processFilters()">
             <div class="fuel-grid">
@@ -138,6 +158,12 @@
                 <button class="tab-btn" id="tab-92" onclick="switchFuelTab('АИ-92')">92</button>
                 <button class="tab-btn" id="tab-dt" onclick="switchFuelTab('ДТ')">ДТ</button>
             </div>
+        </section>
+
+        <!-- БЛОК С ИНТЕРАКТИВНОЙ КАРТОЙ -->
+        <section class="map-section">
+            <div class="map-header-text">🗺️ Интерактивная карта заправок Крыма</div>
+            <div id="map-container"></div>
         </section>
 
         <div class="grid" id="cyberCardsGrid"></div>
