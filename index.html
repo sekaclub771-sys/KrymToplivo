@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Крым Топливо Локатор</title>
+    <title>Крым Топливо Локатор | Предсказание АЗС</title>
     
-    <!-- Настройки PWA приложения для iOS и Android -->
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,150 +13,159 @@
 
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #090d16 0%, #0f1123 50%, #1a0b2e 100%);
-            --glass-card: rgba(30, 41, 59, 0.45);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-glow: rgba(99, 102, 241, 0.05);
-            --text-premium: #ffffff;
-            --text-muted: #94a3b8;
-            --accent: #38bdf8;
+            --cyber-bg: #05070f;
+            --cyber-card: rgba(13, 18, 36, 0.75);
+            --cyber-border: rgba(56, 189, 248, 0.15);
+            --neon-blue: #38bdf8;
+            --neon-purple: #a855f7;
+            --neon-green: #22c55e;
+            --neon-amber: #f59e0b;
+            --neon-red: #ef4444;
+            --text-neon: #f8fafc;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "SF Pro Display", -apple-system, sans-serif; }
         
         body {
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            color: var(--text-premium);
+            background: var(--cyber-bg);
+            color: var(--text-neon);
             min-height: 100vh;
-            padding-bottom: 50px;
-            -webkit-font-smoothing: antialiased;
+            padding-bottom: 60px;
+            overflow-x: hidden;
         }
 
-        .container { width: 92%; max-width: 550px; margin: 0 auto; }
-
-        /* Премиальная шапка с флагом Крыма */
+        /* Футуристичная неоновая шапка */
         header {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 16px 0;
+            background: rgba(5, 7, 15, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 2px solid var(--cyber-border);
+            padding: 18px 0;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            box-shadow: 0 5px 25px rgba(56, 189, 248, 0.08);
         }
+        .container { width: 92%; max-width: 540px; margin: 0 auto; }
         .header-flex { display: flex; justify-content: space-between; align-items: center; }
+        .brand-wrapper { display: flex; align-items: center; gap: 15px; }
         
-        .brand-wrapper { display: flex; align-items: center; gap: 14px; }
-        
-        /* Цифровой флаг Крыма */
+        /* Глянцевый трехмерный флаг Крыма */
         .crimea-flag {
-            width: 44px;
+            width: 46px;
             height: 28px;
-            border-radius: 6px;
+            border-radius: 5px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .flag-blue { height: 16.6%; background: #0046B8; }
         .flag-white { height: 66.8%; background: #FFFFFF; }
         .flag-red { height: 16.6%; background: #D52B1E; }
 
-        .logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #ffffff 30%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-text { font-size: 24px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; background: linear-gradient(to right, #ffffff, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 10px rgba(56,189,248,0.3); }
 
-        .live-badge { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #4ade80; display: flex; align-items: center; gap: 6px; }
-        .pulse-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: pulse 1.8s infinite; }
+        .system-radar { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--neon-green); }
+        .radar-pulse { width: 8px; height: 8px; background: var(--neon-green); border-radius: 50%; animation: radar 1.5s infinite; }
 
-        /* Поиск и премиальные кнопки */
-        .search-section {
-            background: var(--glass-card);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
+        /* Панель управления (Поиск / Кнопки) */
+        .control-panel {
+            background: var(--cyber-card);
+            border: 1px solid var(--cyber-border);
+            border-radius: 22px;
             padding: 22px;
             margin: 25px 0;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255,255,255,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+            position: relative;
         }
+        .control-panel::before { content: ''; position: absolute; top:-1px; left:20px; right:20px; height:1px; background: linear-gradient(to right, transparent, var(--neon-blue), transparent); }
         
         input {
             width: 100%;
-            background: rgba(13, 17, 30, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 18px 20px;
-            border-radius: 16px;
+            background: #090c15;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 16px 18px;
+            border-radius: 14px;
             color: white;
             font-size: 16px;
             outline: none;
             margin-bottom: 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
-        input:focus { border-color: var(--accent); background: rgba(13, 17, 30, 0.9); box-shadow: 0 0 15px rgba(56, 189, 248, 0.15), inset 0 2px 4px rgba(0,0,0,0.2); }
+        input:focus { border-color: var(--neon-purple); box-shadow: 0 0 15px rgba(168, 85, 247, 0.25); }
 
-        .fuel-filters { display: flex; gap: 8px; }
-        .filter-btn {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.03);
+        .fuel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 15px 0;
-            border-radius: 14px;
-            color: #94a3b8;
-            font-size: 15px;
-            font-weight: 700;
+            padding: 14px 0;
+            border-radius: 12px;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 800;
             cursor: pointer;
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
         }
-        .filter-btn.active {
-            background: linear-gradient(135deg, #38bdf8 0%, #0369a1 100%);
-            border-color: transparent;
+        .tab-btn.active {
             color: white;
-            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
+            background: #0d1527;
+            border-color: var(--neon-blue);
+            text-shadow: 0 0 8px var(--neon-blue);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
         }
 
-        /* Усиленные сочные карточки АЗС */
-        .grid { display: flex; flex-direction: column; gap: 18px; }
+        /* Карточки кибер-интерфейса */
+        .grid { display: flex; flex-direction: column; gap: 20px; }
         
-        .card {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.45) 100%);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
+        .cyber-card {
+            background: var(--cyber-card);
+            border: 1px solid var(--cyber-border);
             border-radius: 24px;
             padding: 24px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.03);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             position: relative;
-            overflow: hidden;
+            transition: transform 0.2s;
         }
-        .card::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: var(--glass-glow); pointer-events: none; }
-
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .brand { font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.3px; }
-        .address { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; display: flex; align-items: center; gap: 5px; }
         
-        .fuel-row { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
-        .fuel-badge { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 6px 14px; border-radius: 10px; font-size: 14px; font-weight: 800; letter-spacing: 0.5px; }
-        .fuel-badge.active-95 { background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.4); color: #7dd3fc; }
-        .fuel-badge.active-92 { background: rgba(251, 146, 60, 0.12); border: 1px solid rgba(251, 146, 60, 0.4); color: #ffedd5; }
-        .fuel-badge.active-dt { background: rgba(74, 222, 128, 0.12); border: 1px solid rgba(74, 222, 128, 0.4); color: #bbf7d0; }
+        /* Виджет вероятности на карточке */
+        .predict-widget {
+            position: absolute;
+            top: 22px;
+            right: 24px;
+            text-align: right;
+        }
+        .predict-percent { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
+        .predict-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; margin-top: 2px; }
 
-        .notes { background: rgba(10, 15, 30, 0.4); padding: 14px 18px; border-radius: 14px; font-size: 14px; line-height: 1.5; color: #e2e8f0; border-left: 4px solid #38bdf8; margin-bottom: 14px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
-        .meta { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+        .brand-name { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; color: white; margin-bottom: 4px; }
+        .station-geo { font-size: 14px; color: #64748b; margin-bottom: 18px; }
+        
+        /* Аналитическая шкала (Прогресс-бар вероятности) */
+        .prob-container { margin-bottom: 18px; }
+        .prob-track { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; position: relative; }
+        .prob-bar { height: 100%; width: 0%; border-radius: 10px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        /* Строка топлива */
+        .badges-row { display: flex; gap: 8px; margin-bottom: 18px; }
+        .neon-badge { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #475569; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 800; }
+        .neon-badge.on-95 { background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.4); color: var(--neon-blue); }
+        .neon-badge.on-92 { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.4); color: var(--neon-amber); }
+        .neon-badge.on-dt { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.4); color: var(--neon-green); }
+
+        .log-box { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.04); padding: 14px; border-radius: 12px; font-size: 14px; color: #94a3b8; line-height: 1.4; }
+
+        @keyframes radar {
+            0% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+            70% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
     </style>
 </head>
 <body>
 
-    <!-- Премиальный Хедер с Флагом Крыма -->
+    <!-- Шапка Трона/Киберпанка с флагом -->
     <header>
         <div class="container header-flex">
             <div class="brand-wrapper">
@@ -168,27 +176,27 @@
                 </div>
                 <div class="logo-text">Крым Топливо</div>
             </div>
-            <div class="live-badge">
-                <div class="pulse-dot"></div>
-                <span>Авто-апдейт</span>
+            <div class="system-radar">
+                <div class="radar-pulse"></div>
+                <span>Анализ Сети</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <!-- Поиск и фильтрация под палец -->
-        <section class="search-section">
-            <input type="text" id="searchInput" placeholder="Поиск города, трассы или сети АЗС..." onkeyup="runFilters()">
-            <div class="fuel-filters">
-                <button class="filter-btn active" id="btn-all" onclick="selectFuel('all')">Все АЗС</button>
-                <button class="filter-btn" id="btn-95" onclick="selectFuel('АИ-95')">АИ-95</button>
-                <button class="filter-btn" id="btn-92" onclick="selectFuel('АИ-92')">АИ-92</button>
-                <button class="filter-btn" id="btn-dt" onclick="selectFuel('ДТ')">ДТ</button>
+        <!-- Панель управления -->
+        <section class="control-panel">
+            <input type="text" id="searchInput" placeholder="Поиск локации, трассы или бренда..." onkeyup="processFilters()">
+            <div class="fuel-grid">
+                <button class="tab-btn active" id="tab-all" onclick="switchFuelTab('all')">Все</button>
+                <button class="tab-btn" id="tab-95" onclick="switchFuelTab('АИ-95')">95</button>
+                <button class="tab-btn" id="tab-92" onclick="switchFuelTab('АИ-92')">92</button>
+                <button class="tab-btn" id="tab-dt" onclick="switchFuelTab('ДТ')">ДТ</button>
             </div>
         </section>
 
-        <!-- Место вывода карточек -->
-        <div class="grid" id="cardsContainer"></div>
+        <!-- Карточки заправок -->
+        <div class="grid" id="cyberCardsGrid"></div>
     </main>
 
     <script src="script.js"></script>
