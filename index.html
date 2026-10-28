@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Крым Топливо | Бортовой Локатор АЗС</title>
+    <title>Крым Топливо Локатор</title>
     
+    <!-- Настройки PWA приложения для iOS и Android -->
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,132 +14,99 @@
 
     <style>
         :root {
-            --cyber-bg: #03050a;
-            --cyber-card: rgba(11, 15, 30, 0.7);
-            --cyber-border: rgba(56, 189, 248, 0.12);
+            --cyber-bg: #05070f;
+            --cyber-card: rgba(13, 18, 36, 0.75);
+            --cyber-border: rgba(56, 189, 248, 0.15);
             --neon-blue: #38bdf8;
-            --neon-purple: #c084fc;
-            --neon-green: #4ade80;
-            --neon-amber: #fb923c;
-            --neon-red: #f87171;
-            --text-main: #f8fafc;
-            --text-sub: #64748b;
+            --neon-purple: #a855f7;
+            --neon-green: #22c55e;
+            --neon-amber: #f59e0b;
+            --text-neon: #f8fafc;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "SF Pro Display", -apple-system, sans-serif; }
-        body { background: var(--cyber-bg); color: var(--text-main); min-height: 100vh; padding-bottom: 60px; -webkit-font-smoothing: antialiased; }
-        .container { width: 92%; max-width: 520px; margin: 0 auto; }
+        body { background: var(--cyber-bg); color: var(--text-neon); min-height: 100vh; padding-bottom: 60px; -webkit-font-smoothing: antialiased; }
+        .container { width: 92%; max-width: 540px; margin: 0 auto; }
 
-        /* Шапка с флагом Крыма */
+        /* Премиальный Хедер с Флагом Крыма */
         header {
-            background: rgba(3, 5, 10, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--cyber-border);
-            padding: 16px 0;
+            background: rgba(5, 7, 15, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 2px solid var(--cyber-border);
+            padding: 18px 0;
             position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 5px 25px rgba(56, 189, 248, 0.08);
         }
         .header-flex { display: flex; justify-content: space-between; align-items: center; }
-        .brand-wrapper { display: flex; align-items: center; gap: 12px; }
+        .brand-wrapper { display: flex; align-items: center; gap: 15px; }
         
+        /* Цифровой флаг Крыма кодом */
         .crimea-flag {
-            width: 42px; height: 26px; border-radius: 4px; display: flex; flex-direction: column; overflow: hidden;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 46px; height: 28px; border-radius: 5px; display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25); border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .flag-blue { height: 16.6%; background: #0046B8; }
         .flag-white { height: 66.8%; background: #FFFFFF; }
         .flag-red { height: 16.6%; background: #D52B1E; }
-        .logo-text { font-size: 22px; font-weight: 900; background: linear-gradient(to right, #ffffff, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-text { font-size: 24px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; background: linear-gradient(to right, #ffffff, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .system-radar { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--neon-green); }
-        .radar-pulse { width: 6px; height: 6px; background: var(--neon-green); border-radius: 50%; animation: radar 1.5s infinite; }
+        .system-radar { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--neon-green); }
+        .radar-pulse { width: 8px; height: 8px; background: var(--neon-green); border-radius: 50%; animation: radar 1.5s infinite; }
 
-        /* 📊 КАРТОЧКИ СВОДКИ (Как у конкурента, но круче) */
-        .summary-dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0 10px 0; }
-        .summary-box {
-            background: var(--cyber-card); border: 1px solid var(--cyber-border); border-radius: 16px; padding: 12px 6px; text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative;
-        }
-        .summary-val { font-size: 22px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
-        .summary-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.5px; }
-        .summary-box.green .summary-val { color: var(--neon-green); text-shadow: 0 0 8px rgba(74,222,128,0.2); }
-        .summary-box.amber .summary-val { color: var(--neon-amber); text-shadow: 0 0 8px rgba(251,146,60,0.2); }
-        .summary-box.red .summary-val { color: var(--neon-red); text-shadow: 0 0 8px rgba(248,113,113,0.2); }
-
-        /* Панель фильтров */
-        .control-panel { background: var(--cyber-card); border: 1px solid var(--cyber-border); border-radius: 20px; padding: 18px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+        /* Панель управления */
+        .control-panel { background: var(--cyber-card); border: 1px solid var(--cyber-border); border-radius: 22px; padding: 22px; margin: 25px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         input {
-            width: 100%; background: #080b12; border: 1px solid rgba(56, 189, 248, 0.15); padding: 15px 16px; border-radius: 12px; color: white; font-size: 15px; outline: none; margin-bottom: 12px;
+            width: 100%; background: #090c15; border: 1px solid rgba(56, 189, 248, 0.2); padding: 16px 18px; border-radius: 14px; color: white; font-size: 16px; outline: none; margin-bottom: 16px;
         }
-        input:focus { border-color: var(--neon-purple); }
 
         .fuel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .tab-btn { background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.06); padding: 12px 0; border-radius: 10px; color: #475569; font-size: 13px; font-weight: 800; cursor: pointer; }
-        .tab-btn.active { color: white; background: #0b111e; border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(56, 189, 248, 0.15); }
+        .tab-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px 0; border-radius: 12px; color: #64748b; font-size: 14px; font-weight: 800; cursor: pointer; }
+        .tab-btn.active { color: white; background: #0d1527; border-color: var(--neon-blue); box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
 
-        /* 🗺️ КИБЕР-КОНТЕЙНЕР ДЛЯ БУДУЩЕЙ КАРТЫ */
-        .radar-map-holder {
-            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.05) 0%, transparent 70%), var(--cyber-card);
-            border: 1px solid var(--cyber-border); border-radius: 20px; padding: 20px; margin-bottom: 25px; text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; overflow: hidden;
-        }
-        .radar-grid-lines {
-            border: 1px dashed rgba(56, 189, 248, 0.1); border-radius: 50%; width: 120px; height: 120px; margin: 0 auto 12px auto;
-            display: flex; align-items: center; justify-content: center; position: relative;
-        }
-        .radar-grid-lines::before { content:''; position:absolute; width:60px; height:60px; border: 1px dashed rgba(56, 189, 248, 0.07); border-radius:50%; }
-        .radar-scan-line {
-            position: absolute; width: 50%; height: 2px; background: linear-gradient(to right, rgba(56,189,248,0.5), transparent);
-            top: 50%; left: 50%; transform-origin: left center; animation: scan 4s linear infinite;
-        }
-        .radar-map-title { font-size: 14px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--neon-blue); margin-bottom: 4px; }
-        .radar-map-desc { font-size: 11px; color: #475569; text-transform: uppercase; }
-
-        /* Карточки заправок */
-        .grid { display: flex; flex-direction: column; gap: 16px; }
-        .cyber-card { background: var(--cyber-card); border: 1px solid var(--cyber-border); border-radius: 22px; padding: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.4); position: relative; }
+        /* Сетка карточек АЗС */
+        .grid { display: flex; flex-direction: column; gap: 20px; }
+        .cyber-card { background: var(--cyber-card); border: 1px solid var(--cyber-border); border-radius: 24px; padding: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); position: relative; }
         
-        .predict-widget { position: absolute; top: 20px; right: 20px; text-align: right; }
-        .predict-percent { font-size: 24px; font-weight: 900; }
-        .predict-label { font-size: 9px; font-weight: 700; text-transform: uppercase; color: #475569; }
+        .predict-widget { position: absolute; top: 22px; right: 24px; text-align: right; }
+        .predict-percent { font-size: 26px; font-weight: 900; }
+        .predict-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; }
 
-        .brand-name { font-size: 22px; font-weight: 900; color: white; margin-bottom: 2px; }
-        .station-geo { font-size: 13px; color: #475569; margin-bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
+        .brand-name { font-size: 24px; font-weight: 900; color: white; margin-bottom: 4px; }
+        .station-geo { font-size: 14px; color: #64748b; margin-bottom: 18px; display: flex; flex-direction: column; gap: 4px; }
         
+        /* Плашка расстояния по GPS */
         .distance-badge {
-            display: inline-flex; align-items: center; width: max-content; background: rgba(192, 132, 252, 0.1); 
-            border: 1px solid rgba(192, 132, 252, 0.25); color: #f3e8ff; font-weight: 700; font-size: 11px;
-            padding: 3px 8px; border-radius: 5px; margin-top: 2px; text-transform: uppercase;
+            display: inline-flex; align-items: center; width: max-content; background: rgba(168, 85, 247, 0.12); 
+            border: 1px solid rgba(168, 85, 247, 0.3); color: #e9d5ff; font-weight: 700; font-size: 12px;
+            padding: 4px 10px; border-radius: 6px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;
         }
 
-        .prob-container { margin-bottom: 14px; }
-        .prob-track { height: 5px; background: rgba(255,255,255,0.03); border-radius: 10px; overflow: hidden; }
+        .prob-container { margin-bottom: 18px; }
+        .prob-track { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
         .prob-bar { height: 100%; width: 0%; border-radius: 10px; transition: width 0.8s ease; }
 
-        .badges-row { display: flex; gap: 6px; margin-bottom: 14px; }
-        .neon-badge { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); color: #334155; padding: 5px 10px; border-radius: 7px; font-size: 12px; font-weight: 800; }
-        .neon-badge.on-95 { background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.3); color: var(--neon-blue); }
-        .neon-badge.on-92 { background: rgba(251, 146, 60, 0.08); border-color: rgba(251, 146, 60, 0.3); color: var(--neon-amber); }
-        .neon-badge.on-dt { background: rgba(74, 222, 128, 0.08); border-color: rgba(74, 222, 128, 0.3); color: var(--neon-green); }
+        .badges-row { display: flex; gap: 8px; margin-bottom: 18px; }
+        .neon-badge { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: #475569; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 800; }
+        .neon-badge.on-95 { background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.4); color: var(--neon-blue); }
+        .neon-badge.on-92 { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.4); color: var(--neon-amber); }
+        .neon-badge.on-dt { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.4); color: var(--neon-green); }
 
-        .log-box { background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; font-size: 13px; color: #94a3b8; line-height: 1.4; margin-bottom: 14px; }
+        .log-box { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.04); padding: 14px; border-radius: 12px; font-size: 14px; color: #94a3b8; line-height: 1.4; margin-bottom: 16px; }
 
+        /* Оранжевая кнопка Яндекс.Навигатора */
         .navi-btn {
-            display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
-            background: linear-gradient(135deg, #ff5c00 0%, #ff9000 100%); border: none; padding: 14px; border-radius: 12px;
-            color: white; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 92, 0, 0.2);
+            display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+            background: linear-gradient(135deg, #ff5c00 0%, #ff9000 100%); border: none; padding: 15px; border-radius: 14px;
+            color: white; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 92, 0, 0.25); transition: all 0.2s ease;
         }
-        .navi-icon { width: 16px; height: 16px; fill: white; }
+        .navi-btn:active { transform: scale(0.97); }
+        .navi-icon { width: 18px; height: 18px; fill: white; }
 
         @keyframes radar {
             0% { transform: scale(0.9); opacity: 1; }
-            70% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            70% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
             100% { transform: scale(0.9); opacity: 1; }
-        }
-        @keyframes scan {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -162,6 +130,19 @@
     </header>
 
     <main class="container">
-        <!-- 📊 ПРЕМИАЛЬНАЯ ПАНЕЛЬ СВОДКИ (Новый блок как у krym-toplivo.ru) -->
-        <section class="summary-dashboard">
-            <div class="summary-box green">
+        <section class="control-panel">
+            <input type="text" id="searchInput" placeholder="Поиск локации, трассы или бренда..." onkeyup="processFilters()">
+            <div class="fuel-grid">
+                <button class="tab-btn active" id="tab-all" onclick="switchFuelTab('all')">Все</button>
+                <button class="tab-btn" id="tab-95" onclick="switchFuelTab('АИ-95')">95</button>
+                <button class="tab-btn" id="tab-92" onclick="switchFuelTab('АИ-92')">92</button>
+                <button class="tab-btn" id="tab-dt" onclick="switchFuelTab('ДТ')">ДТ</button>
+            </div>
+        </section>
+
+        <div class="grid" id="cyberCardsGrid"></div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
