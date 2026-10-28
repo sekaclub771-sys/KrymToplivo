@@ -2,8 +2,8 @@ let crimeaDatabase = [];
 let currentFilterTab = 'all';
 let userCoords = null; 
 
+// Старт работы приложения
 async function startCyberEngine() {
-    // Получение GPS координат смартфона водителя
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -11,11 +11,11 @@ async function startCyberEngine() {
                     lat: position.coords.latitude,
                     lon: position.coords.longitude
                 };
-                console.log("GPS подключен:", userCoords);
+                console.log("GPS координаты получены:", userCoords);
                 loadFuelDatabase(); 
             },
             (error) => {
-                console.warn("GPS отключен водителем:", error.message);
+                console.warn("GPS отклонен:", error.message);
                 loadFuelDatabase(); 
             },
             { enableHighAccuracy: true, timeout: 5000 }
@@ -25,8 +25,10 @@ async function startCyberEngine() {
     }
 }
 
+// Загрузка данных из базы JSON
 async function loadFuelDatabase() {
     const grid = document.getElementById('cyberCardsGrid');
+    if (!grid) return;
     grid.innerHTML = '<p style="text-align:center; opacity:0.4; font-size:14px; letter-spacing:1px; margin-top:30px;">СИНХРОНИЗАЦИЯ ИИ-МАТРИЦЫ ТОПЛИВА...</p>';
     
     try {
@@ -45,7 +47,7 @@ async function loadFuelDatabase() {
             return { ...st, probability, lat: coords.lat, lon: coords.lon, distance };
         });
         
-        // Сортировка: сначала самые близкие рабочие заправки
+        // Сортировка по удаленности АЗС от водителя
         if (userCoords) {
             crimeaDatabase.sort((a, b) => {
                 if (a.fuels.length === 0) return 1;  
@@ -58,8 +60,8 @@ async function loadFuelDatabase() {
         
         renderCyberCards(crimeaDatabase);
     } catch (err) {
-        console.error("Ошибка матричного движка:", err);
-        grid.innerHTML = '<p style="text-align:center; color:#ef4444; font-size:14px;">КРИТИЧЕСКАЯ ОШИБКА ОБНОВЛЕНИЯ БАЗЫ.</p>';
+        console.error("Ошибка загрузки базы:", err);
+        grid.innerHTML = '<p style="text-align:center; color:#ef4444; font-size:14px; margin-top:30px;">КРИТИЧЕСКАЯ ОШИБКА ОБНОВЛЕНИЯ БАЗЫ.</p>';
     }
 }
 
@@ -118,6 +120,7 @@ function fallbackCoordinates(city) {
 
 function renderCyberCards(dataset) {
     const grid = document.getElementById('cyberCardsGrid');
+    if (!grid) return;
     grid.innerHTML = '';
 
     if (dataset.length === 0) {
@@ -189,14 +192,6 @@ function processFilters() {
         return searchMatch && fuelMatch;
     });
     renderCyberCards(filtered);
-}
-
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
-            self.addEventListener('fetch', function(e) { e.respondWith(fetch(e.request)); });
-        `)).catch(() => {});
-    });
 }
 
 document.addEventListener('DOMContentLoaded', startCyberEngine);
