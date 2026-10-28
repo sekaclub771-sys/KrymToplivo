@@ -3,14 +3,14 @@
   "name": "Крым-Топливо-Локатор: Мониторинг АЗС",
   "icons": [
     {
-      "src": "https://flaticon.com",
+      "src": "logo.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": "./index.html",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#05070f",
+  "theme_color": "#05070f",
   "display": "standalone",
   "orientation": "portrait"
 }
