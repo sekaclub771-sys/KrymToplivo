@@ -1,9 +1,9 @@
 let crimeaDatabase = [];
 let currentFilterTab = 'all';
-let userCoords = null; // Переменная для хранения координат смартфона
+let userCoords = null; 
 
 async function startCyberEngine() {
-    // 1. Пробуем запросить геопозицию пользователя прямо при старте приложения
+    // Получение GPS координат смартфона водителя
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -11,12 +11,12 @@ async function startCyberEngine() {
                     lat: position.coords.latitude,
                     lon: position.coords.longitude
                 };
-                console.log("Геопозиция успешно получена:", userCoords);
-                loadFuelDatabase(); // Загружаем базу после получения GPS
+                console.log("GPS подключен:", userCoords);
+                loadFuelDatabase(); 
             },
             (error) => {
-                console.warn("Доступ к GPS отклонен водителем:", error.message);
-                loadFuelDatabase(); // Всё равно загружаем базу, но без расчета расстояний
+                console.warn("GPS отключен водителем:", error.message);
+                loadFuelDatabase(); 
             },
             { enableHighAccuracy: true, timeout: 5000 }
         );
@@ -27,7 +27,7 @@ async function startCyberEngine() {
 
 async function loadFuelDatabase() {
     const grid = document.getElementById('cyberCardsGrid');
-    grid.innerHTML = '<p style="text-align:center; opacity:0.4; font-size:14px; letter-spacing:1px; margin-top:30px;">ЗАГРУЗКА ИИ-МАТРИЦЫ ТОПЛИВА...</p>';
+    grid.innerHTML = '<p style="text-align:center; opacity:0.4; font-size:14px; letter-spacing:1px; margin-top:30px;">СИНХРОНИЗАЦИЯ ИИ-МАТРИЦЫ ТОПЛИВА...</p>';
     
     try {
         const res = await fetch('data.json?v=' + Date.now());
@@ -37,7 +37,6 @@ async function loadFuelDatabase() {
             const probability = calculateProbability(st.fuels, st.source, st.terms);
             const coords = st.lat && st.lon ? { lat: st.lat, lon: st.lon } : fallbackCoordinates(st.city);
             
-            // Если координаты водителя доступны, рассчитываем точную дистанцию в км
             let distance = null;
             if (userCoords) {
                 distance = calculateHaversineDistance(userCoords.lat, userCoords.lon, coords.lat, coords.lon);
@@ -46,12 +45,12 @@ async function loadFuelDatabase() {
             return { ...st, probability, lat: coords.lat, lon: coords.lon, distance };
         });
         
-        // Мощная сортировка: если GPS доступен, автоматически поднимаем наверх самые БЛИЗКИЕ к водителю АЗС с топливом
+        // Сортировка: сначала самые близкие рабочие заправки
         if (userCoords) {
             crimeaDatabase.sort((a, b) => {
-                if (a.fuels.length === 0) return 1;  // Пустые заправки кидаем в самый низ
+                if (a.fuels.length === 0) return 1;  
                 if (b.fuels.length === 0) return -1;
-                return a.distance - b.distance;     // Сортировка от ближних к дальним
+                return a.distance - b.distance;     
             });
         } else {
             crimeaDatabase.sort((a, b) => b.probability - a.probability);
@@ -60,16 +59,12 @@ async function loadFuelDatabase() {
         renderCyberCards(crimeaDatabase);
     } catch (err) {
         console.error("Ошибка матричного движка:", err);
-        grid.innerHTML = '<p style="text-align:center; color:#ef4444; font-size:14px;">КРИТИЧЕСКАЯ ОШИБКА СИНХРОНИЗАЦИИ БАЗЫ.</p>';
+        grid.innerHTML = '<p style="text-align:center; color:#ef4444; font-size:14px;">КРИТИЧЕСКАЯ ОШИБКА ОБНОВЛЕНИЯ БАЗЫ.</p>';
     }
 }
 
-/**
- * 📐 МАТЕМАТИЧЕСКАЯ ФОРМУЛА ХАВЕРСИНА
- * Считает точное расстояние между двумя точками на сфере (Земле) по широте и долготе
- */
 function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Радиус Земли в километрах
+    const R = 6371; 
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = 
@@ -77,7 +72,7 @@ function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
         Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return parseFloat((R * c).toFixed(1)); // Возвращаем расстояние с округлением до 1 знака (например, 14.5 км)
+    return parseFloat((R * c).toFixed(1)); 
 }
 
 function calculateProbability(fuels, source, terms) {
@@ -126,7 +121,7 @@ function renderCyberCards(dataset) {
     grid.innerHTML = '';
 
     if (dataset.length === 0) {
-        grid.innerHTML = '<p style="text-align:center; opacity:0.3; font-size:14px; margin-top:20px;">ЛОКАЦИИ ПОД ДАННЫЙ ПАРАМЕТР НЕ НАЙДЕНЫ.</p>';
+        grid.innerHTML = '<p style="text-align:center; opacity:0.3; font-size:14px; margin-top:20px;">ЛОКАЦИИ НЕ НАЙДЕНЫ.</p>';
         return;
     }
 
@@ -142,7 +137,6 @@ function renderCyberCards(dataset) {
         const badge92 = st.fuels.includes('АИ-92') ? 'on-92' : '';
         const badgeDt = st.fuels.includes('ДТ') ? 'on-dt' : '';
 
-        // Генерируем плашку с расстоянием, только если координаты пользователя определены
         const distanceHtml = st.distance !== null ? `<div class="distance-badge">📡 Дистанция: ${st.distance} км</div>` : '';
 
         card.innerHTML = `
@@ -197,5 +191,12 @@ function processFilters() {
     renderCyberCards(filtered);
 }
 
-// Запускаем движок с опросом геопозиции при старте
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+            self.addEventListener('fetch', function(e) { e.respondWith(fetch(e.request)); });
+        `)).catch(() => {});
+    });
+}
+
 document.addEventListener('DOMContentLoaded', startCyberEngine);
