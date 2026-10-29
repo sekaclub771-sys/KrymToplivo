@@ -1,0 +1,17 @@
+{
+  "updated_at": "Live 24/7",
+  "meta": {
+    "service": "Крым Топливо GT — Мониторинг АЗС",
+    "last_updated_short": "Live 24/7",
+    "region": "Республика Крым и г. Севастополь",
+    "total_stations": 32
+  },
+  "summary": {
+    "total": 32,
+    "available": 24,
+    "queue": 5,
+    "deficit": 3
+  },
+  "regional_digests": [],
+  "stations": []
+}
