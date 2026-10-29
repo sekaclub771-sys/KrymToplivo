@@ -28,7 +28,7 @@ function loadFuelDatabase() {
 
     fetch('data.json?v=' + Date.now())
         .then(res => {
-            if (!res.ok) throw new Error(" Ошибка чтения JSON файла");
+            if (!res.ok) throw new Error("Ошибка чтения JSON файла");
             return res.json();
         })
         .then(rawData => {
@@ -146,7 +146,7 @@ function switchFuelTab(fuelType) {
     
     let btnId = 'tab-all';
     if (fuelType === 'АИ-95') btnId = 'tab-95';
-    if (fuelType === 'АИ-92') btnId = 'tab-92';
+    if (fuelType === 'АИ-92' btnId = 'tab-92';
     if (fuelType === 'ДТ') btnId = 'tab-dt';
     
     const activeBtn = document.getElementById(btnId);
