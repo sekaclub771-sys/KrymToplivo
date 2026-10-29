@@ -7,13 +7,9 @@ function startCyberEngine() {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-                console.log("GPS координаты получены:", userCoords);
                 loadFuelDatabase();
             },
-            (err) => {
-                console.warn("GPS отклонен или недоступен:", err.message);
-                loadFuelDatabase();
-            },
+            () => { loadFuelDatabase(); },
             { enableHighAccuracy: true, timeout: 5000 }
         );
     } else {
@@ -24,11 +20,11 @@ function startCyberEngine() {
 function loadFuelDatabase() {
     const grid = document.getElementById('cyberCardsGrid');
     if (!grid) return;
-    grid.innerHTML = '<p style="text-align:center; opacity:0.4; font-size:14px; margin-top:30px;">СИНХРОНИЗАЦИЯ СЕТИ АЗС...</p>';
+    grid.innerHTML = '<p style="text-align:center; opacity:0.4; font-size:14px; margin-top:30px;">ЗАГРУЗКА БОРТОВЫХ СИСТЕМ...</p>';
 
     fetch('data.json?v=' + Date.now())
         .then(res => {
-            if (!res.ok) throw new Error("Ошибка чтения JSON файла");
+            if (!res.ok) throw new Error("JSON Error");
             return res.json();
         })
         .then(rawData => {
@@ -49,11 +45,12 @@ function loadFuelDatabase() {
                 crimeaDatabase.sort((a, b) => b.probability - a.probability);
             }
 
+            renderSummaryDashboard(crimeaDatabase);
             renderCyberCards(crimeaDatabase);
         })
         .catch(err => {
             console.error(err);
-            grid.innerHTML = '<p style="text-align:center; color:#ef4444; font-size:14px; margin-top:30px;">ОШИБКА ЗАГРУЗКИ БАЗЫ ДАННЫХ.</p>';
+            grid.innerHTML = '<p style="text-align:center; color:#f87171; font-size:14px; margin-top:30px;">СБОЙ СИНХРОНИЗАЦИИ БАЗЫ.</p>';
         });
 }
 
@@ -69,12 +66,26 @@ function calculateProbability(fuels, source, terms) {
     if (!fuels || fuels.length === 0) return 0;
     let score = 50;
     const text = terms.toLowerCase();
-    const src = source.toLowerCase();
-    if (src.includes('минтопэнерго') || src.includes('официальный')) score += 20;
-    if (text.includes('свободный') || text.includes('ограничений нет')) score += 20;
-    if (text.includes('только по талонам')) score -= 35;
-    if (text.includes('закончился')) score -= 40;
+    if (source.toLowerCase().includes('официальный') || source.toLowerCase().includes('минтопэнерго')) score += 25;
+    if (text.includes('свободный') || text.includes('ограничений нет')) score += 25;
+    if (text.includes('очередь') || text.includes('талонам')) score -= 20;
+    if (text.includes('закончился') || text.includes('нет в наличии')) score -= 45;
     return Math.max(5, Math.min(100, score));
+}
+
+function renderSummaryDashboard(dataset) {
+    let ok = 0, warn = 0, alert = 0;
+    dataset.forEach(st => {
+        if (st.probability >= 70) ok++;
+        else if (st.probability >= 30) warn++;
+        else alert++;
+    });
+    const eOk = document.getElementById('sum-ok');
+    const eWarn = document.getElementById('sum-warn');
+    const eAlert = document.getElementById('sum-alert');
+    if (eOk) eOk.innerText = ok;
+    if (eWarn) eWarn.innerText = warn;
+    if (eAlert) eAlert.innerText = alert;
 }
 
 function openYandexNavigator(lat, lon) {
@@ -99,42 +110,36 @@ function renderCyberCards(dataset) {
     const grid = document.getElementById('cyberCardsGrid');
     if (!grid) return;
     grid.innerHTML = '';
-
     if (dataset.length === 0) {
-        grid.innerHTML = '<p style="text-align:center; opacity:0.3; font-size:14px; margin-top:20px;">ЛОКАЦИИ НЕ НАЙДЕНЫ.</p>';
+        grid.innerHTML = '<p style="text-align:center; opacity:0.3; font-size:13px; padding:20px;">ЛОКАЦИИ ПОД ПАРАМЕТРЫ НЕ НАЙДЕНЫ</p>';
         return;
     }
-
     dataset.forEach(st => {
         const card = document.createElement('div');
         card.className = 'cyber-card';
-        let clr = st.probability >= 75 ? '#22c55e' : st.probability >= 40 ? '#f59e0b' : '#ef4444';
-        
-        const b95 = st.fuels.includes('АИ-95') ? 'on-95' : '';
-        const b92 = st.fuels.includes('АИ-92') ? 'on-92' : '';
-        const bDt = st.fuels.includes('ДТ') ? 'on-dt' : '';
-        
-        const distHtml = st.distance !== null ? `<div class="distance-badge">📡 Дистанция: ${st.distance} км</div>` : '';
-        
+        let clr = st.probability >= 70 ? 'var(--neon-green)' : st.probability >= 30 ? 'var(--neon-amber)' : 'var(--neon-red)';
+        const b95 = st.fuels.includes('АИ-95') ? 'active-95' : '';
+        const b92 = st.fuels.includes('АИ-92') ? 'active-92' : '';
+        const bDt = st.fuels.includes('ДТ') ? 'active-dt' : '';
+        const distHtml = st.distance !== null ? `<div class="geo-pill">📡 Дистанция: ${st.distance} км</div>` : '';
+
         card.innerHTML = `
-            <div class="predict-widget">
-                <div class="predict-percent" style="color: ${clr}">${st.probability}%</div>
-                <div class="predict-label">Наличие</div>
+            <div class="status-container">
+                <div class="status-val" style="color: ${clr}; text-shadow: 0 0 10px ${clr}30;">${st.probability}%</div>
+                <div class="status-lbl">Наличие</div>
             </div>
-            <div class="brand-name">${st.brand}</div>
-            <div class="station-geo"><span>📍 ${st.address}</span>${distHtml}</div>
-            <div class="prob-container">
-                <div class="prob-track">
-                    <div class="prob-bar" style="width: ${st.probability}%; background: ${clr}"></div>
-                </div>
+            <div class="station-title">${st.brand}</div>
+            <div class="station-address"><span>📍 ${st.address}</span>${distHtml}</div>
+            <div class="bar-container">
+                <div class="bar-track"><div class="bar-fill" style="width: ${st.probability}%; background: ${clr}; box-shadow: 0 0 8px ${clr}60;"></div></div>
             </div>
-            <div class="badges-row">
-                <span class="neon-badge ${b95}">АИ-95</span>
-                <span class="neon-badge ${b92}">АИ-92</span>
-                <span class="neon-badge ${bDt}">ДТ</span>
+            <div class="badges-list">
+                <span class="badge-node ${b95}">АИ-95</span>
+                <span class="badge-node ${b92}">АИ-92</span>
+                <span class="badge-node ${bDt}">ДТ</span>
             </div>
-            <div class="log-box">${st.terms}</div>
-            <button class="navi-btn" onclick="openYandexNavigator(${st.lat}, ${st.lon})">Построить маршрут</button>
+            <div class="info-panel">${st.terms}</div>
+            <button class="route-button" onclick="openYandexNavigator(${st.lat}, ${st.lon})">Проложить маршрут в Навигатор</button>
         `;
         grid.appendChild(card);
     });
@@ -143,13 +148,11 @@ function renderCyberCards(dataset) {
 function switchFuelTab(fuelType) {
     currentFilterTab = fuelType;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    
-    let btnId = 'tab-all';
-    if (fuelType === 'АИ-95') btnId = 'tab-95';
-    if (fuelType === 'АИ-92' btnId = 'tab-92';
-    if (fuelType === 'ДТ') btnId = 'tab-dt';
-    
-    const activeBtn = document.getElementById(btnId);
+    let targetId = 'btn-all';
+    if (fuelType === 'АИ-95') targetId = 'btn-95';
+    if (fuelType === 'АИ-92') targetId = 'btn-92';
+    if (fuelType === 'ДТ') targetId = 'btn-dt';
+    const activeBtn = document.getElementById(targetId);
     if (activeBtn) activeBtn.classList.add('active');
     processFilters();
 }
@@ -157,12 +160,12 @@ function switchFuelTab(fuelType) {
 function processFilters() {
     const searchInput = document.getElementById('searchInput');
     const query = searchInput ? searchInput.value.toLowerCase() : '';
-    
     const filtered = crimeaDatabase.filter(st => {
         const searchMatch = st.city.includes(query) || st.address.toLowerCase().includes(query) || st.brand.toLowerCase().includes(query);
         const fuelMatch = currentFilterTab === 'all' || st.fuels.includes(currentFilterTab);
         return searchMatch && fuelMatch;
     });
+    renderSummaryDashboard(filtered);
     renderCyberCards(filtered);
 }
 
