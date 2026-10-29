@@ -1,104 +1,522 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!doctype html>
+<html lang="ru" data-theme="gold">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Крым Топливо | Бортовой Локатор</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="КрымТопливо">
-    <link rel="apple-touch-icon" href="logo.png">
-    <style>
-        :root {
-            --bg-dark: #03050a;
-            --card-glass: rgba(15, 22, 42, 0.65);
-            --card-border: rgba(56, 189, 248, 0.12);
-            --neon-blue: #38bdf8;
-            --neon-purple: #c084fc;
-            --neon-green: #4ade80;
-            --neon-amber: #fb923c;
-            --neon-red: #f87171;
-            --text-main: #f8fafc;
-            --text-sub: #64748b;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
-        body { background: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding-bottom: 60px; -webkit-font-smoothing: antialiased; }
-        .container { width: 92%; max-width: 500px; margin: 0 auto; }
-        header { background: rgba(3, 5, 10, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--card-border); padding: 16px 0; position: sticky; top: 0; z-index: 100; }
-        .header-flex { display: flex; justify-content: space-between; align-items: center; }
-        .brand-wrapper { display: flex; align-items: center; gap: 12px; }
-        .crimea-flag { width: 40px; height: 24px; border-radius: 4px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); }
-        .flag-blue { height: 16.6%; background: #0046B8; }
-        .flag-white { height: 66.8%; background: #FFFFFF; }
-        .flag-red { height: 16.6%; background: #D52B1E; }
-        .logo-text { font-size: 20px; font-weight: 900; background: linear-gradient(to right, #ffffff, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .sys-status { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--neon-green); }
-        .pulse-dot { width: 6px; height: 6px; background: var(--neon-green); border-radius: 50%; }
-        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0 12px 0; }
-        .summary-card { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 16px; padding: 12px 4px; text-align: center; }
-        .sum-val { font-size: 22px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
-        .sum-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-sub); }
-        .summary-card.ok .sum-val { color: var(--neon-green); }
-        .summary-card.warn .sum-val { color: var(--neon-amber); }
-        .summary-card.alert .sum-val { color: var(--neon-red); }
-        .control-panel { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 20px; padding: 18px; margin-bottom: 20px; }
-        input { width: 100%; background: #070a12; border: 1px solid rgba(56, 189, 248, 0.15); padding: 14px 16px; border-radius: 12px; color: white; font-size: 15px; outline: none; margin-bottom: 12px; }
-        .fuel-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .tab-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); padding: 12px 0; border-radius: 10px; color: #475569; font-size: 13px; font-weight: 800; }
-        .tab-btn.active { color: white; background: #0b1220; border-color: var(--neon-blue); }
-        .map-section { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 20px; padding: 10px; margin-bottom: 20px; }
-        .map-label { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--neon-blue); margin: 6px 0 10px 8px; }
-        .map-container { width: 100%; height: 260px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.04); }
-        iframe { width: 100%; height: 100%; border: none; }
-        .grid { display: flex; flex-direction: column; gap: 14px; }
-        .cyber-card { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; position: relative; }
-        .status-container { position: absolute; top: 20px; right: 20px; text-align: right; }
-        .status-val { font-size: 24px; font-weight: 900; line-height: 1; }
-        .status-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-sub); }
-        .station-title { font-size: 20px; font-weight: 800; color: white; margin-bottom: 2px; }
-        .station-address { font-size: 13px; color: var(--text-sub); margin-bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
-        .geo-pill { display: inline-flex; align-items: center; background: rgba(192, 132, 252, 0.08); border: 1px solid rgba(192, 132, 252, 0.2); color: #e9d5ff; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 6px; }
-        .bar-container { margin-bottom: 14px; }
-        .bar-track { height: 5px; background: rgba(255,255,255,0.03); border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; width: 0%; border-radius: 10px; }
-        .badges-list { display: flex; gap: 6px; margin-bottom: 14px; }
-        .badge-node { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); color: #334155; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 800; }
-        .badge-node.active-95 { background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.25); color: var(--neon-blue); }
-        .badge-node.active-92 { background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.25); color: var(--neon-amber); }
-        .badge-node.active-dt { background: rgba(74, 222, 128, 0.08); border-color: rgba(74, 222, 128, 0.25); color: var(--neon-green); }
-        .info-panel { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.02); padding: 12px; border-radius: 10px; font-size: 13px; color: #94a3b8; line-height: 1.4; margin-bottom: 14px; }
-        .route-button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: linear-gradient(135deg, #ff5c00 0%, #ff8c00 100%); border: none; padding: 14px; border-radius: 12px; color: white; font-size: 14px; font-weight: 800; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Крым Топливо GT — Мониторинг АЗС 24/7</title>
+  <meta name="description" content="Ближайшие заправки Крыма по GPS, наличие топлива (АИ-92, АИ-95, 95 Ultra, АИ-100, ДТ, Газ), очереди и цены в реальном времени." />
+  <meta name="theme-color" content="#0b0a09" id="meta-theme-color" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="КрымТопливо" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Outfit:wght@700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root, html[data-theme="gold"] {
+      --bg-outer: #040404;
+      --bg-canvas: #0b0a09;
+      --bg-surface: #141210;
+      --bg-elevated: #1d1a16;
+      --bg-glass: rgba(16, 14, 12, 0.92);
+      --border-subtle: #27221d;
+      --border-accent: rgba(245, 158, 11, 0.55);
+      --text-primary: #faf7f2;
+      --text-secondary: #d6cec2;
+      --text-muted: #8c8275;
+      --accent: #fbbf24;
+      --btn-grad: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+      --btn-text: #090807;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+    }
+    html[data-theme="emerald"] {
+      --bg-outer: #030706;
+      --bg-canvas: #070d0b;
+      --bg-surface: #0f1714;
+      --bg-elevated: #16221e;
+      --bg-glass: rgba(11, 18, 15, 0.92);
+      --border-subtle: #1d2d27;
+      --border-accent: rgba(16, 185, 129, 0.55);
+      --text-primary: #f2fbf7;
+      --text-secondary: #c2dbd0;
+      --text-muted: #769487;
+      --accent: #34d399;
+      --btn-grad: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --btn-text: #04120c;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+    }
+    html[data-theme="light"] {
+      --bg-outer: #e5e0d8;
+      --bg-canvas: #f5f2eb;
+      --bg-surface: #ffffff;
+      --bg-elevated: #ede8df;
+      --bg-glass: rgba(255, 255, 255, 0.94);
+      --border-subtle: #e0d9ce;
+      --border-accent: rgba(217, 119, 6, 0.55);
+      --text-primary: #14110f;
+      --text-secondary: #3b352e;
+      --text-muted: #73695e;
+      --accent: #b45309;
+      --btn-grad: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --btn-text: #110d08;
+      --green: #059669;
+      --amber: #d97706;
+      --red: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: var(--bg-outer);
+      color: var(--text-primary);
+      min-height: 100dvh;
+    }
+    .mobile-app-shell {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100dvh;
+      margin: 0 auto;
+      background: var(--bg-canvas);
+      padding-bottom: 88px;
+      box-shadow: 0 0 80px rgba(0,0,0,0.85);
+      position: relative;
+    }
+    .app-header {
+      position: sticky; top: 0; z-index: 30;
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .brand-lockup { display: flex; align-items: center; gap: 10px; }
+    .crest-box {
+      width: 40px; height: 40px; border-radius: 14px;
+      background: #110F0D; border: 1px solid rgba(245,158,11,0.45);
+      box-shadow: 0 0 18px rgba(245,158,11,0.22);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .brand-title { font-family: 'Outfit', sans-serif; font-size: 1.02rem; font-weight: 900; letter-spacing: 0.01em; }
+    .header-actions { display: flex; align-items: center; gap: 6px; }
+    .icon-btn {
+      width: 38px; height: 38px; border-radius: 14px;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      color: var(--accent); font-weight: 800; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .btn-live {
+      height: 38px; padding: 0 13px; border-radius: 14px;
+      background: var(--btn-grad); color: var(--btn-text);
+      border: none; font-weight: 900; font-size: 0.74rem; text-transform: uppercase;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .main-viewport { padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; }
+    .gps-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 8px 12px; border-radius: 16px;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      transition: border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+    .gps-bar.reordering {
+      border-color: var(--green);
+      box-shadow: 0 0 18px rgba(16,185,129,0.22);
+    }
+    .btn-gps {
+      height: 32px; padding: 0 10px; border-radius: 10px;
+      background: rgba(16,185,129,0.16); border: 1px solid rgba(16,185,129,0.45);
+      color: #34d399; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; cursor: pointer;
+    }
+    .city-select {
+      background: transparent; border: none; color: var(--text-primary);
+      font-weight: 800; font-size: 0.78rem; outline: none; max-width: 175px;
+    }
+    .city-select option { background: #141210; color: #faf7f2; }
+    .chips-row {
+      display: flex; align-items: center; gap: 6px; overflow-x: auto; padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .chips-row::-webkit-scrollbar { display: none; }
+    .chip-btn {
+      height: 34px; padding: 0 12px; border-radius: 12px;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      color: var(--text-secondary); font-weight: 800; font-size: 0.74rem;
+      white-space: nowrap; cursor: pointer; transition: transform 0.15s ease;
+    }
+    .chip-btn.active {
+      background: var(--btn-grad); color: var(--btn-text); border-color: transparent; font-weight: 900;
+    }
+    .spotlight-card {
+      background: linear-gradient(145deg, rgba(245, 158, 11, 0.15) 0%, var(--bg-surface) 60%);
+      border: 2px solid var(--border-accent);
+      border-radius: 24px; padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    }
+    .stations-list { display: flex; flex-direction: column; gap: 11px; }
+    .station-card {
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 22px; padding: 14px;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: transform 0.46s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease, box-shadow 0.35s ease;
+      will-change: transform, opacity;
+    }
+    @keyframes gpsReorderWave {
+      0% { opacity: 0.55; transform: translateY(14px) scale(0.985); border-color: var(--border-accent); box-shadow: 0 0 22px rgba(245,158,11,0.22); }
+      60% { opacity: 1; transform: translateY(-2px) scale(1.005); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .station-reorder-active {
+      animation: gpsReorderWave 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .fuel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .fuel-pill {
+      background: var(--bg-canvas); border: 1px solid var(--border-subtle);
+      border-radius: 12px; padding: 6px 8px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .fuel-pill.highlight { border-color: var(--accent); }
+    .btn-go {
+      width: 100%; height: 46px; border-radius: 15px;
+      background: var(--btn-grad); color: var(--btn-text);
+      border: none; font-weight: 900; font-size: 0.78rem; text-transform: uppercase;
+      letter-spacing: 0.04em; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .bottom-dock {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; height: 66px; z-index: 40;
+      background: var(--bg-glass); backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-subtle);
+      display: grid; grid-template-columns: repeat(3, 1fr);
+    }
+    .dock-btn {
+      background: transparent; border: none; color: var(--text-muted);
+      font-weight: 800; font-size: 0.68rem; text-transform: uppercase;
+      cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    }
+    .dock-btn.active { color: var(--accent); font-weight: 900; }
+    .toast-banner {
+      position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%);
+      width: 92%; max-width: 440px; z-index: 60;
+      background: #12100E; border: 2px solid #f59e0b; color: #faf7f2;
+      border-radius: 16px; padding: 12px 14px; font-size: 0.76rem; font-weight: 800;
+      display: none; box-shadow: 0 12px 32px rgba(0,0,0,0.75);
+    }
+    .toast-banner.show { display: block; }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="container header-flex">
-            <div class="brand-wrapper"><div class="crimea-flag"><div class="flag-blue"></div><div class="flag-white"></div><div class="flag-red"></div></div><div class="logo-text">Крым Топливо</div></div>
-            <div class="sys-status"><div class="pulse-dot"></div><span>Борт-ИИ</span></div>
+  <div class="mobile-app-shell">
+    <header class="app-header">
+      <div class="brand-lockup">
+        <div class="crest-box">
+          <svg viewBox="0 0 120 120" width="32" height="32" fill="none">
+            <path d="M60 6L106 24V62C106 88 85 106 60 114C35 106 14 88 14 62V24L60 6Z" fill="#141210" stroke="#F59E0B" stroke-width="6"/>
+            <path d="M60 23C60 23 38 46 38 64C38 76.15 47.85 86 60 86C72.15 86 82 76.15 82 64C82 54 75 43 68 35C69 43 65 48 61 49C64 41 63 31 60 23Z" fill="#F59E0B"/>
+            <path d="M60 47L73 75L60 68.5L47 75L60 47Z" fill="#090807"/>
+            <circle cx="60" cy="66" r="5" fill="#10B981"/>
+          </svg>
         </div>
+        <div>
+          <div class="brand-title">КРЫМ <span style="color:var(--accent);">ТОПЛИВО</span> GT</div>
+          <div style="font-size:0.62rem;color:var(--text-muted);font-weight:800;">БЛИЖАЙШИЕ АЗС ПО GPS • 24/7</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-theme" class="icon-btn" type="button" title="Сменить тему">🎨</button>
+        <button id="btn-refresh" class="btn-live" type="button">↻ Live</button>
+      </div>
     </header>
-    <main class="container">
-        <section class="summary-grid">
-            <div class="summary-card ok"><div class="sum-val" id="sum-ok">0</div><div class="sum-lbl">Доступно</div></div>
-            <div class="summary-card warn"><div class="sum-val" id="sum-warn">0</div><div class="sum-lbl">Очередь</div></div>
-            <div class="summary-card alert"><div class="sum-val" id="sum-alert">0</div><div class="sum-lbl">Дефицит</div></div>
-        </section>
-        <section class="control-panel">
-            <input type="text" id="searchInput" placeholder="Поиск города, трассы или АЗС..." onkeyup="processFilters()">
-            <div class="fuel-tabs">
-                <button class="tab-btn active" id="btn-all" onclick="switchFuelTab('all')">Все</button>
-                <button class="tab-btn" id="btn-95" onclick="switchFuelTab('АИ-95')">95</button>
-                <button class="tab-btn" id="btn-92" onclick="switchFuelTab('АИ-92')">92</button>
-                <button class="tab-btn" id="btn-dt" onclick="switchFuelTab('ДТ')">ДТ</button>
-            </div>
-        </section>
-        <section class="map-section">
-            <div class="map-label">🗺️ Интерактивный Радар Трафика</div>
-            <div class="map-container"><iframe src="https://yandex.ru" allowfullscreen="true"></iframe></div>
-        </section>
-        <div class="grid" id="cyberCardsGrid"></div>
+
+    <main class="main-viewport">
+      <div id="gps-bar" class="gps-bar">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button id="btn-gps" class="btn-gps" type="button">📡 Мой GPS</button>
+          <select id="city-preset" class="city-select" aria-label="Точка отсчета">
+            <option value="44.9521,34.1024">📍 Симферополь</option>
+            <option value="44.6166,33.5254">📍 Севастополь</option>
+            <option value="44.4952,34.1663">📍 Ялта</option>
+            <option value="44.6764,34.4100">📍 Алушта</option>
+            <option value="45.1904,33.3669">📍 Евпатория</option>
+            <option value="45.0319,35.3824">📍 Феодосия</option>
+            <option value="45.3562,36.4674">📍 Керчь</option>
+            <option value="44.8514,34.9722">📍 Судак</option>
+            <option value="44.7528,33.8608">📍 Бахчисарай</option>
+            <option value="45.0542,34.6021">📍 Белогорск (Таврида)</option>
+            <option value="45.7086,34.3933">📍 Джанкой</option>
+          </select>
+        </div>
+        <span id="updated-time" style="font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--text-muted);font-weight:700;">Актуально</span>
+      </div>
+
+      <!-- Tab 1: Nearest Stations -->
+      <section id="tab-locator">
+        <div id="fuel-chips" class="chips-row" style="margin-bottom:10px;"></div>
+        <div id="spotlight-box" style="margin-bottom:12px;"></div>
+        <div id="stations-list" class="stations-list"></div>
+      </section>
+
+      <!-- Tab 2: Lazy Map -->
+      <section id="tab-map" style="display:none;">
+        <div style="border-radius:22px;overflow:hidden;border:1px solid var(--border-subtle);background:var(--bg-surface);">
+          <div style="padding:12px 14px;font-size:0.76rem;font-weight:800;">Интерактивная карта АЗС Крыма</div>
+          <iframe id="map-iframe" title="Карта АЗС Крыма" style="width:100%;height:390px;border:0;" loading="lazy"></iframe>
+        </div>
+      </section>
+
+      <!-- Tab 3: Regional Digests -->
+      <section id="tab-digests" style="display:none;">
+        <div id="digests-list" class="stations-list"></div>
+      </section>
     </main>
-    <script src="script.js"></script>
+
+    <div id="toast-banner" class="toast-banner"></div>
+
+    <nav class="bottom-dock">
+      <button class="dock-btn active" data-tab="locator" type="button">📍 Рядом</button>
+      <button class="dock-btn" data-tab="map" type="button">🗺️ Карта</button>
+      <button class="dock-btn" data-tab="digests" type="button">📋 Сводка</button>
+    </nav>
+  </div>
+
+  <script>
+    (function () {
+      const ALL_GRADES = ['АИ-92', 'АИ-95', '95 Ultra', 'АИ-100', 'ДТ', 'Газ'];
+      const THEMES = ['gold', 'emerald', 'light'];
+      let currentThemeIdx = 0;
+      let selectedGrade = 'all';
+      let userCoords = { lat: 44.9521, lon: 34.1024, label: 'Симферополь' };
+      let rawStations = [];
+      let digests = [];
+      let mapMounted = false;
+
+      function haversineKm(lat1, lon1, lat2, lon2) {
+        const R = 6371.0;
+        const toRad = (d) => (d * Math.PI) / 180.0;
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+        return Number((R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(1));
+      }
+
+      function showToast(msg) {
+        const el = document.getElementById('toast-banner');
+        el.textContent = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 4800);
+      }
+
+      // 3-Step Smart Navigation Cascade: Yandex -> 500ms 2GIS -> 1200ms Clipboard Copy
+      window.smartNavigate = function (lat, lon, fullAddr) {
+        let appOpened = false;
+        const onBlur = () => { appOpened = true; };
+        window.addEventListener('blur', onBlur);
+        const launch = (url) => {
+          const ifr = document.createElement('iframe');
+          ifr.style.display = 'none';
+          ifr.src = url;
+          document.body.appendChild(ifr);
+          setTimeout(() => ifr.remove(), 600);
+        };
+        launch('yandexnavi://build_route_on_map?lat_to=' + lat.toFixed(6) + '&lon_to=' + lon.toFixed(6));
+        setTimeout(() => {
+          if (!appOpened && !document.hidden) {
+            launch('dgis://2gis.ru/routeSearch/to/' + lon.toFixed(6) + ',' + lat.toFixed(6) + '/go');
+          }
+        }, 500);
+        setTimeout(async () => {
+          window.removeEventListener('blur', onBlur);
+          if (!appOpened && !document.hidden) {
+            try { await navigator.clipboard.writeText(fullAddr); } catch (e) {}
+            showToast('⚠️ Навигатор не обнаружен на устройстве. Адрес скопирован в буфер обмена: ' + fullAddr);
+          }
+        }, 1200);
+      };
+
+      function getSortedStations() {
+        return rawStations.map((s) => {
+          const dist = haversineKm(userCoords.lat, userCoords.lon, s.lat, s.lon);
+          const pricesObj = s.prices || {};
+          if (!s.prices && s.fuels && typeof s.fuels === 'object' && !Array.isArray(s.fuels)) {
+            pricesObj['АИ-92'] = s.fuels.AI92?.price || 60.4;
+            pricesObj['АИ-95'] = s.fuels.AI95?.price || 66.8;
+            pricesObj['95 Ultra'] = s.fuels.AI95_ULTRA?.price || 69.2;
+            pricesObj['АИ-100'] = s.fuels.AI100?.price || 82.9;
+            pricesObj['ДТ'] = s.fuels.DT?.price || 68.5;
+            pricesObj['Газ'] = s.fuels.LPG?.price || 36.2;
+          }
+          const brand = s.brand || s.network || 'АЗС';
+          const qStatus = s.queue_status || (s.status === 'available' ? 'Свободно' : s.status === 'queue' ? 'Очередь ~6 авто' : 'По талонам');
+          return Object.assign({}, s, {
+            brand,
+            pricesObj,
+            qStatus,
+            distance_km: dist,
+            distance_badge: dist.toFixed(1) + ' км'
+          });
+        }).sort((a, b) => a.distance_km - b.distance_km);
+      }
+
+      function renderStations(animateReorder) {
+        const listEl = document.getElementById('stations-list');
+        const spotEl = document.getElementById('spotlight-box');
+        const gpsBar = document.getElementById('gps-bar');
+        const prevRects = {};
+
+        if (animateReorder) {
+          gpsBar.classList.add('reordering');
+          setTimeout(() => gpsBar.classList.remove('reordering'), 650);
+          listEl.querySelectorAll('[data-id]').forEach((node) => {
+            prevRects[node.getAttribute('data-id')] = node.getBoundingClientRect();
+          });
+        }
+
+        const sorted = getSortedStations();
+        const nearestFree = sorted.find((s) => s.qStatus === 'Свободно') || sorted[0];
+
+        if (nearestFree) {
+          const addr = nearestFree.city + ', ' + nearestFree.address;
+          spotEl.innerHTML =
+            '<div class="spotlight-card">' +
+              '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+                '<span style="font-size:0.65rem;font-weight:900;color:#34d399;background:rgba(16,185,129,0.18);padding:3px 8px;border-radius:99px;">● САМАЯ БЛИЖАЙШАЯ • СВОБОДНО</span>' +
+                '<span style="font-family:JetBrains Mono,monospace;font-weight:900;color:var(--accent);font-size:0.95rem;">' + nearestFree.distance_badge + '</span>' +
+              '</div>' +
+              '<div style="font-size:0.72rem;font-weight:800;color:var(--accent);">СЕТЬ ' + nearestFree.brand + ' • ' + nearestFree.city + '</div>' +
+              '<div style="font-size:1.05rem;font-weight:900;margin-top:2px;">' + nearestFree.name + '</div>' +
+              '<div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px;">' + nearestFree.address + '</div>' +
+              '<button class="btn-go" onclick="smartNavigate(' + nearestFree.lat + ',' + nearestFree.lon + ',\'' + addr.replace(/'/g, '') + '\')">➤ Поехать сейчас (' + nearestFree.distance_badge + ')</button>' +
+            '</div>';
+        }
+
+        listEl.innerHTML = sorted.map((st, idx) => {
+          const addr = st.city + ', ' + st.address;
+          const delay = Math.min(idx * 35, 280);
+          const pills = ALL_GRADES.map((g) => {
+            const p = st.pricesObj[g] ? Number(st.pricesObj[g]).toFixed(2) : '—';
+            const hl = selectedGrade === g ? 'highlight' : '';
+            return '<div class="fuel-pill ' + hl + '"><span style="font-size:0.64rem;color:var(--text-muted);font-weight:800;">' + g + '</span><span style="font-family:JetBrains Mono,monospace;font-size:0.75rem;font-weight:800;">' + p + '₽</span></div>';
+          }).join('');
+
+          return (
+            '<article class="station-card ' + (animateReorder ? 'station-reorder-active' : '') + '" data-id="' + st.id + '" style="animation-delay:' + delay + 'ms;">' +
+              '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">' +
+                '<div>' +
+                  '<div style="font-size:0.72rem;font-weight:800;color:var(--text-secondary);">' +
+                    (idx < 3 ? '<span style="color:#34d399;">#' + (idx + 1) + ' РЯДОМ</span> • ' : '') +
+                    '<span style="font-family:JetBrains Mono,monospace;color:var(--accent);">' + st.distance_badge + '</span> • ' + st.brand + ' • ' + st.city +
+                  '</div>' +
+                  '<h3 style="font-size:0.96rem;font-weight:800;margin-top:3px;">' + st.name + '</h3>' +
+                  '<div style="font-size:0.74rem;color:var(--text-muted);">' + st.address + '</div>' +
+                '</div>' +
+                '<span style="font-size:0.66rem;font-weight:900;padding:4px 8px;border-radius:10px;background:var(--bg-canvas);border:1px solid var(--border-subtle);white-space:nowrap;">' + st.qStatus + '</span>' +
+              '</div>' +
+              '<div class="fuel-grid">' + pills + '</div>' +
+              '<button class="btn-go" onclick="smartNavigate(' + st.lat + ',' + st.lon + ',\'' + addr.replace(/'/g, '') + '\')">➤ Поехать на АЗС (' + st.distance_badge + ')</button>' +
+            '</article>'
+          );
+        }).join('');
+
+        if (animateReorder) {
+          listEl.querySelectorAll('[data-id]').forEach((node) => {
+            const oldRect = prevRects[node.getAttribute('data-id')];
+            if (!oldRect) return;
+            const dy = oldRect.top - node.getBoundingClientRect().top;
+            if (Math.abs(dy) > 4) {
+              node.style.transition = 'none';
+              node.style.transform = 'translateY(' + dy + 'px)';
+              requestAnimationFrame(() => {
+                node.style.transition = 'transform 0.46s cubic-bezier(0.22, 1, 0.36, 1)';
+                node.style.transform = 'translateY(0)';
+              });
+            }
+          });
+        }
+      }
+
+      function renderChips() {
+        const wrap = document.getElementById('fuel-chips');
+        const items = ['all'].concat(ALL_GRADES);
+        wrap.innerHTML = items.map((g) => {
+          const active = selectedGrade === g ? 'active' : '';
+          const label = g === 'all' ? 'Все марки' : g;
+          return '<button type="button" class="chip-btn ' + active + '" data-grade="' + g + '">' + label + '</button>';
+        }).join('');
+        wrap.querySelectorAll('.chip-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            selectedGrade = btn.getAttribute('data-grade');
+            renderChips();
+            renderStations(false);
+          });
+        });
+      }
+
+      function renderDigests() {
+        const el = document.getElementById('digests-list');
+        el.innerHTML = (digests || []).map((d) => (
+          '<article class="station-card">' +
+            '<div style="font-size:0.7rem;font-weight:900;color:var(--accent);text-transform:uppercase;">' + d.direction_subtitle + '</div>' +
+            '<h3 style="font-size:0.98rem;font-weight:800;">' + d.region_title + '</h3>' +
+            '<p style="font-size:0.78rem;color:var(--text-secondary);line-height:1.45;">' + d.summary_lead + '</p>' +
+            '<div style="font-size:0.74rem;font-family:JetBrains Mono,monospace;color:var(--text-muted);padding-top:6px;border-top:1px solid var(--border-subtle);">АИ-95: <strong style="color:var(--accent);">' + d.price_range_95 + '</strong> • ДТ: <strong style="color:var(--accent);">' + d.price_range_dt + '</strong></div>' +
+          '</article>'
+        )).join('');
+      }
+
+      async function fetchFuel(force) {
+        try {
+          const res = await fetch(force ? '/api/fuel?force=true&_t=' + Date.now() : '/api/fuel');
+          const data = await res.json();
+          rawStations = data.stations || [];
+          digests = data.regional_digests || [];
+          document.getElementById('updated-time').textContent = data.updated_at || (data.meta && data.meta.last_updated_short) || 'Live';
+          renderStations(Boolean(force));
+          renderDigests();
+        } catch (e) {}
+      }
+
+      function locateByGps(notify) {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition((pos) => {
+          userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude, label: 'По вашему GPS' };
+          renderStations(true);
+          if (notify) showToast('📡 АЗС плавно пересортированы по вашему GPS');
+        }, () => {}, { enableHighAccuracy: true, timeout: 6000 });
+      }
+
+      document.getElementById('btn-gps').addEventListener('click', () => locateByGps(true));
+      document.getElementById('city-preset').addEventListener('change', (e) => {
+        const [lat, lon] = e.target.value.split(',').map(Number);
+        userCoords = { lat, lon, label: e.target.options[e.target.selectedIndex].text };
+        renderStations(true);
+      });
+      document.getElementById('btn-refresh').addEventListener('click', () => fetchFuel(true));
+      document.getElementById('btn-theme').addEventListener('click', () => {
+        currentThemeIdx = (currentThemeIdx + 1) % THEMES.length;
+        document.documentElement.setAttribute('data-theme', THEMES[currentThemeIdx]);
+      });
+
+      document.querySelectorAll('.dock-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const tab = btn.getAttribute('data-tab');
+          document.querySelectorAll('.dock-btn').forEach((b) => b.classList.toggle('active', b === btn));
+          document.getElementById('tab-locator').style.display = tab === 'locator' ? 'block' : 'none';
+          document.getElementById('tab-map').style.display = tab === 'map' ? 'block' : 'none';
+          document.getElementById('tab-digests').style.display = tab === 'digests' ? 'block' : 'none';
+          if (tab === 'map' && !mapMounted) {
+            document.getElementById('map-iframe').src = 'https://yandex.ru/map-widget/v1/?ll=34.300000%2C45.300000&z=8';
+            mapMounted = true;
+          }
+        });
+      });
+
+      renderChips();
+      fetchFuel(false);
+      locateByGps(false);
+    })();
+  </script>
 </body>
 </html>
